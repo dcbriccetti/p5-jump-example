@@ -31,8 +31,13 @@ function draw() {
   noStroke();
   ambientMaterial('white');
   directionalLight(255, 255, 255, 1, 1, -1);
-  translate(p1.x, p1.y, p1.z);
-  ellipsoid(40, 60);
+
+  positions.forEach(p => {
+    push();
+    translate(p.x, p.y, p.z);
+    ellipsoid(40, 60);
+    pop();
+  });
 }
 
 const JUMP_DURATION_MS = 1000;
