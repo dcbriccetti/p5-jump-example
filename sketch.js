@@ -1,4 +1,4 @@
-let jumpStartTimeMs = null;  // When the jump started or null if not jumping
+let jumpStartTimeMs = [null, null, null];  // When the jump started or null if not jumping
 
 let positions;
 let player_index = 2;
@@ -25,8 +25,8 @@ function draw() {
       case 'a': p1.x -= 5; break;
       case 'd': p1.x += 5; break;
       case ' ':
-        if (!jumpStartTimeMs) {
-          jumpStartTimeMs = millis();
+        if (!jumpStartTimeMs[player_index]) {
+          jumpStartTimeMs[player_index] = millis();
         }
         break;
     }
@@ -38,21 +38,21 @@ function draw() {
   positions.forEach((p, i) => {
     ambientMaterial(i === player_index ? 'green' : 'white');
     push();
-    translate(p.x, p.y, p.z);
+    translate(p.x, p.y - getJumpHeight(i), p.z);
     ellipsoid(40, 60);
     pop();
   });
 }
 
-const JUMP_DURATION_MS = 1000;
-const MAX_JUMP_HEIGHT = 100;
+const JUMP_DURATION_MS = 2000;
+const MAX_JUMP_HEIGHT = 300;
 
-function getJumpHeight() {
-  if (jumpStartTimeMs) {
-    const timeIntoJumpMs = millis() - jumpStartTimeMs;
+function getJumpHeight(i) {
+  if (jumpStartTimeMs[i]) {
+    const timeIntoJumpMs = millis() - jumpStartTimeMs[i];
     const jumpDone = timeIntoJumpMs > JUMP_DURATION_MS;
     if (jumpDone) {
-      jumpStartTimeMs = null;
+      jumpStartTimeMs[i] = null;
     } else {
       const jumpFractionDone = timeIntoJumpMs / JUMP_DURATION_MS;
       return sin(jumpFractionDone * PI) * MAX_JUMP_HEIGHT;
