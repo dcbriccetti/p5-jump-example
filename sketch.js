@@ -1,21 +1,25 @@
-let x = 0;
-let y = 100;
-let z = 0;
 let jumpStartTimeMs = null;  // When the jump started or null if not jumping
+
+let positions;
 
 function setup() {
   createCanvas(800, 800, WEBGL);
+  const p1 = createVector(   0, 0, 0);
+  const p2 = createVector(-300, 0, 0);
+  const p3 = createVector( 300, 0, 0);
+  positions = [p1, p2, p3];
 }
 
 function draw() {
   background(220);
+  const p1 = positions[0];
 
   if (keyIsPressed) {
     switch (key) {
-      case 'w': z -= 5; break;
-      case 's': z += 5; break;
-      case 'a': x -= 5; break;
-      case 'd': x += 5; break;
+      case 'w': p1.z -= 5; break;
+      case 's': p1.z += 5; break;
+      case 'a': p1.x -= 5; break;
+      case 'd': p1.x += 5; break;
       case ' ':
         if (!jumpStartTimeMs) {
           jumpStartTimeMs = millis();
@@ -24,11 +28,10 @@ function draw() {
     }
   }
 
-  stroke('blue');
-  ambientMaterial('lightblue');
+  noStroke();
+  ambientMaterial('white');
   directionalLight(255, 255, 255, 1, 1, -1);
-  translate(x, y - getJumpHeight(), z);
-  rotateY(millis() / 1000);
+  translate(p1.x, p1.y, p1.z);
   ellipsoid(40, 60);
 }
 
