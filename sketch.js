@@ -1,42 +1,23 @@
-let jumpStartTimeMs = [null, null, null];  // When the jump started or null if not jumping
-
-let positions;
-let player_index = 2;
+let jumpStartTimeMs = [];  // When each jump started or null if not jumping
+let positions = [];
+let player_index = 0;
 
 function setup() {
-  createCanvas(800, 800, WEBGL);
-  const p1 = createVector(-300, 0, 0);
-  const p2 = createVector(   0, 0, 0);
-  const p3 = createVector( 300, 0, 0);
-  positions = [p1, p2, p3];
+  createCanvas(800, 700, WEBGL);
+  for (let x = -300; x <= 300; x += 100) {
+    positions.push(createVector(x, 0, 0))
+  }
 }
 
 function draw() {
   background(220);
-  const p1 = positions[player_index];
-
-  if (keyIsPressed) {
-    switch (key) {
-      case '1': player_index = 0; break;
-      case '2': player_index = 1; break;
-      case '3': player_index = 2; break;
-      case 'w': p1.z -= 5; break;
-      case 's': p1.z += 5; break;
-      case 'a': p1.x -= 5; break;
-      case 'd': p1.x += 5; break;
-      case ' ':
-        if (!jumpStartTimeMs[player_index]) {
-          jumpStartTimeMs[player_index] = millis();
-        }
-        break;
-    }
-  }
-
-  noStroke();
+  const pos = positions[player_index];
+  handleInput(pos);
+  ambientMaterial('white');
   directionalLight(255, 255, 255, 1, 1, -1);
 
   positions.forEach((p, i) => {
-    ambientMaterial(i === player_index ? 'green' : 'white');
+    if (i === player_index) stroke('white'); else noStroke();
     push();
     translate(p.x, p.y - getJumpHeight(i), p.z);
     ellipsoid(40, 60);
@@ -44,7 +25,28 @@ function draw() {
   });
 }
 
-const JUMP_DURATION_MS = 2000;
+function handleInput(pos) {
+  if (keyIsPressed) {
+    const num = Number(key);
+    if (num >= 1 && num <= positions.length) {
+      player_index = num - 1
+    } else {
+      switch (key) {
+        case 'w': pos.z -= 5; break;
+        case 's': pos.z += 5; break;
+        case 'a': pos.x -= 5; break;
+        case 'd': pos.x += 5; break;
+        case ' ':
+          if (!jumpStartTimeMs[player_index]) {
+            jumpStartTimeMs[player_index] = millis();
+          }
+          break;
+      }
+    }
+  }
+}
+
+const JUMP_DURATION_MS = 1000;
 const MAX_JUMP_HEIGHT = 300;
 
 function getJumpHeight(i) {
